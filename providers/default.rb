@@ -68,6 +68,8 @@ def full_path
 end
 
 def swap_file_size
+  Chef::Log.info "new size #{new_resource.size_in_mb}"
+  Chef::Log.info "auto allocate #{new_resource.auto_allocate}"
   new_resource.auto_allocate ? auto_size_swap : new_resource.size_in_mb
 end
 
