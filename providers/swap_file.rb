@@ -34,17 +34,32 @@ def initialize(*args)
 end
 
 action :create do
-   File.exists?(full_path)
+  add_swap_file unless File.exists?(full_path)
 end
 
 action :delete do
-    not_if !File.exists?(full_path)
+  remove_swap_file if File.exists?(full_path)
+end
+
+def add_swap_file
+  mount_swap_file if create_swap_file
+end
+
+def create_swap_file
+  execute "create the swap file" do
+    command "dd if=/dev/zero of=#{full_path} bs=1M count=#{swap_file_size}) && mkswap #{full_path}"
+    not_if full_path.nil? || full_path.empty?
+  end
 end
 
 def mount_swap_file
   execute "activate swap" do
     command "swapon #{full_path}"
   end
+end
+
+def remove_swap_file
+  delete_swap_file if unmount_swap_file
 end
 
 def unmount_swap_file
@@ -54,17 +69,14 @@ def unmount_swap_file
 end
 
 def delete_swap_file
+  file "#{full_path}" do
+    action :delete
+    only_if File.exists?(full_path)
+  end
 end
 
 def full_path
   File.join(new_resource.path, new_resource.filename)
-end
-
-def create_swap_file
-  execute "create the swap file" do
-    command "dd if=/dev/zero of=#{full_path} bs=1M count=#{swap_file_size}) && mkswap #{full_path}"
-    not_if full_path.nil? || full_path.empty?
-  end
 end
 
 def swap_file_size
@@ -77,9 +89,14 @@ def auto_size_swap
 end
 
 def get_final_size
-  multiply_memory if [new_resource.min_swap_in_mb..new_resource.max_swap_in_mb].include?(multiply_memory)
-  new_resource.min_swap_in_mb if new_resource.min_swap_in_mb > multiply_memory
-  new_resource.max_swap_in_mb if new_resource.max_swap_in_mb < multiply_memory
+  case
+  when [new_resource.min_swap_in_mb..new_resource.max_swap_in_mb].include?(multiply_memory)
+    multiply_memory
+  when new_resource.min_swap_in_mb > multiply_memory
+    new_resource.min_swap_in_mb
+  when new_resource.max_swap_in_mb < multiply_memory
+    new_resource.max_swap_in_mb
+  end
 end
 
 def check_min_max
