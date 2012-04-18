@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
+actions :create, :delete
+
 def initialize(*args)
   super
   @action = :create
 end
-
-actions :create, :delete
 
 attribute :path, :kind_of => String, :default => "/mnt"
 attribute :filename, :kind_of => String, :default => "swapfile"
