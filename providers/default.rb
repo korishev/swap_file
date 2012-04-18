@@ -87,7 +87,7 @@ def get_final_size
 end
 
 def check_min_max
-  if new_resource.max_swap_in_mb < new_resource.min_swap_in_db
+  if new_resource.max_swap_in_mb < new_resource.min_swap_in_mb
     raise "Min swapfile size cannot be larger than Max swapfile size"
   end
 end
