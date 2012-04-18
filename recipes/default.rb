@@ -17,5 +17,5 @@
 # limitations under the License.
 
 swap_file "/mnt/swapfile" do
-
+  action :create
 end
