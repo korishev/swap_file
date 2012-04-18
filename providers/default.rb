@@ -30,7 +30,7 @@ end
 
 def create_swap_file
   execute "create the swap file" do
-    command "dd if=/dev/zero of=#{full_path} bs=1M count=#{swap_file_size}) && mkswap #{full_path}"
+    command "dd if=/dev/zero of=#{full_path} bs=1M count=#{swap_file_size} && mkswap #{full_path}"
     not_if full_path.nil? || full_path.empty?
   end
 end
