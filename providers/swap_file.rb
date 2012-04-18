@@ -76,7 +76,7 @@ def delete_swap_file
 end
 
 def full_path
-  File.join(new_resource.path, new_resource.filename)
+  new_resource.name.nil? || new_resource.name.empty? ?  File.join(new_resource.path, new_resource.filename) : new_resource.name
 end
 
 def swap_file_size
