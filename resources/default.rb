@@ -16,6 +16,11 @@
 # limitations under the License.
 #
 
+def initialize(*args)
+  super
+  @action = :create
+end
+
 actions :create, :delete
 
 attribute :path, :kind_of => String, :default => "/mnt"

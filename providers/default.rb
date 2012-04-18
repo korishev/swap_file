@@ -16,11 +16,6 @@
 # limitations under the License.
 #
 
-def initialize(*args)
-  super
-  @action = :create
-end
-
 action :create do
   add_swap_file unless ::File.exists?(full_path)
 end
