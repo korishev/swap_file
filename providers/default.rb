@@ -16,29 +16,17 @@
 # limitations under the License.
 #
 
-# Resource Attributes
-#actions :create, :delete
-#
-#attribute :path, :kind_of => String, :default => "/mnt"
-#attribute :filename, :kind_of => String, :default => "swapfile"
-#attribute :auto_allocate, :default => false
-#attribute :multiplier, :kind_of => Numeric, :default => 2
-#attribute :max_swap_in_mb, :kind_of => Numeric, :default => 30000
-#attribute :min_swap_in_mb, :kind_of => Numeric, :default => 4000
-#attribute :size_in_mb, :kind_of => Numeric
-#attribute :prio, :kind_of => Numeric, :default => -1
-
 def initialize(*args)
   super
   @action = :create
 end
 
 action :create do
-  add_swap_file unless File.exists?(full_path)
+  add_swap_file unless ::File.exists?(full_path)
 end
 
 action :delete do
-  remove_swap_file if File.exists?(full_path)
+  remove_swap_file if ::File.exists?(full_path)
 end
 
 def add_swap_file
@@ -71,12 +59,12 @@ end
 def delete_swap_file
   file "#{full_path}" do
     action :delete
-    only_if File.exists?(full_path)
+    only_if ::File.exists?(full_path)
   end
 end
 
 def full_path
-  new_resource.name.nil? || new_resource.name.empty? ?  File.join(new_resource.path, new_resource.filename) : new_resource.name
+  new_resource.name.nil? || new_resource.name.empty? ?  ::File.join(new_resource.path, new_resource.filename) : new_resource.name
 end
 
 def swap_file_size
