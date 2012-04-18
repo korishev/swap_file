@@ -93,6 +93,6 @@ def check_min_max
 end
 
 def multiply_memory
-  @memory ||= node["memory"]["total"][0..-3] * new_resource.multiplier
+  @memory ||= node["memory"]["total"][0..-3].to_i * new_resource.multiplier
 end
 
