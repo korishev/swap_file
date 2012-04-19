@@ -24,7 +24,7 @@ def initialize(*args)
 end
 
 attribute :size_in_mb,     :kind_of => Numeric, :default => 2000
-attribute :prio,           :kind_of => Numeric, :default => -1
+attribute :prio,           :kind_of => Numeric, :default => 0
 
 attribute :auto_allocate,  :default => false                        # Determine size of swap based on system memory?
 attribute :multiplier,     :kind_of => Numeric, :default => 2       # how many times system memory should swap be if auto allocating?
