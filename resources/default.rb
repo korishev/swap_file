@@ -23,12 +23,10 @@ def initialize(*args)
   @action = :create
 end
 
-attribute :path, :kind_of => String, :default => "/mnt"
-attribute :filename, :kind_of => String, :default => "swapfile"
-attribute :size_in_mb, :kind_of => Numeric
-attribute :prio, :kind_of => Numeric, :default => -1
+attribute :size_in_mb,     :kind_of => Numeric, :default => 2000
+attribute :prio,           :kind_of => Numeric, :default => -1
 
-attribute :auto_allocate, :default => false                         # Determine size of swap based on system memory?
-attribute :multiplier, :kind_of => Numeric, :default => 2           # how many times system memory should swap be if auto allocating?
+attribute :auto_allocate,  :default => false                        # Determine size of swap based on system memory?
+attribute :multiplier,     :kind_of => Numeric, :default => 2       # how many times system memory should swap be if auto allocating?
 attribute :max_swap_in_mb, :kind_of => Numeric, :default => 30000   # default max swap size 30G
 attribute :min_swap_in_mb, :kind_of => Numeric, :default => 4000    # default min swap size 4G

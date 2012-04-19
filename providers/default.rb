@@ -37,7 +37,7 @@ end
 
 def mount_swap_file
   execute "activate swap" do
-    command "swapon #{full_path}"
+    command "swapon #{full_path} -p #{new_resource.prio}"
   end
 end
 
@@ -59,7 +59,7 @@ def delete_swap_file
 end
 
 def full_path
-  new_resource.name.nil? || new_resource.name.empty? ?  ::File.join(new_resource.path, new_resource.filename) : new_resource.name
+  new_resource.name.nil? || new_resource.name.empty? ?  "/mnt/swapfile" : new_resource.name
 end
 
 def swap_file_size
@@ -72,13 +72,15 @@ def auto_size_swap
 end
 
 def get_final_size
+  min = new_resource.min_swap_in_mb
+  max = new_resource.max_swap_in_mb
   case
-  when [new_resource.min_swap_in_mb..new_resource.max_swap_in_mb].include?(multiply_memory)
+  when [min..max].include?(multiply_memory)
     multiply_memory
-  when new_resource.min_swap_in_mb > multiply_memory
-    new_resource.min_swap_in_mb
-  when new_resource.max_swap_in_mb < multiply_memory
-    new_resource.max_swap_in_mb
+  when min > multiply_memory
+    min
+  when max < multiply_memory
+    max
   end
 end
 
@@ -89,6 +91,8 @@ def check_min_max
 end
 
 def multiply_memory
-  @memory ||= node["memory"]["total"][0..-3].to_i * new_resource.multiplier
+  #some architectures report memory as a number, some as a string with kB appended
+  total_memory = node["memory"]["total"].gsub(/kb/i,"").to_i
+  @memory ||= total_memory * new_resource.multiplier
 end
 
