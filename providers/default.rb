@@ -17,27 +17,43 @@
 #
 
 action :create do
-  add_swap_file unless ::File.exists?(full_path)
+  add_swap_file
+  new_resource.updated_by_last_action(true)
 end
 
 action :delete do
   remove_swap_file if ::File.exists?(full_path)
+  new_resource.updated_by_last_action(true)
 end
 
 def add_swap_file
-  mount_swap_file if create_swap_file
+  if ::File.exists?(full_path)
+    mount_swap_file
+  else
+    mount_swap_file if create_swap_file
+  end
 end
 
 def create_swap_file
   execute "create the swap file" do
     command "dd if=/dev/zero of=#{full_path} bs=1M count=#{swap_file_size} && mkswap #{full_path}"
-    not_if full_path.nil? || full_path.empty?
+    not_if { full_path.nil? || full_path.empty? }
   end
 end
 
 def mount_swap_file
   execute "activate swap" do
     command "swapon #{full_path} -p #{new_resource.prio}"
+    only_if { %x(swapon -s)[full_path].nil? } # don't activate if already active
+  end
+
+  mount "/dev/null" do
+    device full_path
+    fstype "swap"
+    dump 0
+    pass 0
+    options "sw"
+    action :enable
   end
 end
 
@@ -49,10 +65,19 @@ def unmount_swap_file
   execute "deactivate swap" do
     command "swapoff #{full_path})"
   end
+
+  mount "/dev/null" do
+    device full_path
+    fstype "swap"
+    dump 0
+    pass 0
+    options "sw"
+    action :disable
+  end
 end
 
 def delete_swap_file
-  file "#{full_path}" do
+  file full_path do
     action :delete
     only_if ::File.exists?(full_path)
   end
