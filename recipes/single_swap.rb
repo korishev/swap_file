@@ -18,5 +18,5 @@
 
 swap_file "/mnt/swapfile" do
   action :create
-  size_in_mb 2000
+  size_in_mb node["swap_file"]["size_in_mb"]
 end
