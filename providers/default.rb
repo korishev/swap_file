@@ -63,7 +63,7 @@ end
 
 def unmount_swap_file
   execute "deactivate swap" do
-    command "swapoff #{full_path})"
+    command "swapoff #{full_path}"
   end
 
   mount "/dev/null" do
