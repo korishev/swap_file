@@ -79,7 +79,7 @@ end
 def delete_swap_file
   file full_path do
     action :delete
-    only_if ::File.exists?(full_path)
+    only_if { ::File.exists?(full_path) }
   end
 end
 
